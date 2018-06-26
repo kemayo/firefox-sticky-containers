@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "Sticky Containers",
+  "version": "1.0",
+  "author": "David Lynch",
+
+  "description": "New tabs will keep the current container",
+
+  "icons": {
+    "48": "icons/border-48.png"
+  },
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "contextualIdentities",
+    "cookies",
+    "tabs",
+    "webNavigation"
+  ]
+}
