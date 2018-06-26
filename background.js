@@ -6,6 +6,9 @@ const privateCookieStorePrefix = 'firefox-private';
 let lastCookieStoreId = defaultCookieStoreId;
 let abandonedTabId;
 
+// NOTE: This started out with reading the code of a very small corner of the
+// Conex extension, and then stripping out and rewriting much of it.
+
 const openInDifferentContainer = function(cookieStoreId, tab, urlOverride) {
   const tabProperties = {
     active: true,
@@ -50,13 +53,6 @@ const updateLastCookieStoreId = function(activeInfo) {
 // tab.onUpdated -> status:loading + url
 // tab.onUpdated -> status:complete
 
-browser.tabs.onCreated.addListener(tab => {
-  console.debug('tab onCreated', tab, tab.url);
-  browser.tabs.get(tab.id).then(tab => {
-    console.log('onCreated tabs.get', tab);
-  })
-});
-
 browser.tabs.onActivated.addListener(activeInfo => {
   console.debug('tab onActivated', activeInfo);
   if (activeInfo.tabId == abandonedTabId) {
@@ -88,6 +84,14 @@ browser.webNavigation.onBeforeNavigate.addListener(details => {
 });
 
 // DEBUG help for me later:
-// browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-//   console.debug('tab onUpdated', tabId, changeInfo, tab);
-// });
+/*
+browser.tabs.onCreated.addListener(tab => {
+  console.debug('tab onCreated', tab, tab.url);
+  browser.tabs.get(tab.id).then(tab => {
+    console.log('onCreated tabs.get', tab);
+  })
+});
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  console.debug('tab onUpdated', tabId, changeInfo, tab);
+});
+*/
