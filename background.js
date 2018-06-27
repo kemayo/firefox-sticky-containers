@@ -32,17 +32,15 @@ const openInDifferentContainer = function(cookieStoreId, tab, urlOverride) {
   abandonedTabId = tab.id;
 };
 
-const updateLastCookieStoreId = function(activeInfo) {
-  browser.tabs.get(activeInfo.tabId).then(tab => {
-    if(
-      (!blankPages.has(tab.url) || tab.cookieStoreId != defaultCookieStoreId)
-      && tab.cookieStoreId != lastCookieStoreId
-      && !tab.cookieStoreId.startsWith(privateCookieStorePrefix)
-    ) {
-      console.debug(`cookieStoreId changed from ${lastCookieStoreId} -> ${tab.cookieStoreId}`);
-      lastCookieStoreId = tab.cookieStoreId;
-    }
-  }, e => console.error(e));
+const updateLastCookieStoreId = function(tab) {
+  if (
+    (!blankPages.has(tab.url) || tab.cookieStoreId != defaultCookieStoreId)
+    && tab.cookieStoreId != lastCookieStoreId
+    && !tab.cookieStoreId.startsWith(privateCookieStorePrefix)
+  ) {
+    console.debug(`cookieStoreId changed from ${lastCookieStoreId} -> ${tab.cookieStoreId}`);
+    lastCookieStoreId = tab.cookieStoreId;
+  }
 };
 
 const isPrivilegedURL = function(url) {
@@ -69,7 +67,9 @@ browser.tabs.onActivated.addListener(activeInfo => {
   if (activeInfo.tabId == abandonedTabId) {
     return;
   }
-  updateLastCookieStoreId(activeInfo);
+  browser.tabs.get(activeInfo.tabId).then(tab => {
+    updateLastCookieStoreId(tab);
+  }, e => console.error(e));
 });
 
 browser.webNavigation.onBeforeNavigate.addListener(details => {
@@ -93,9 +93,23 @@ browser.webNavigation.onBeforeNavigate.addListener(details => {
       && tab.cookieStoreId == defaultCookieStoreId
       && lastCookieStoreId != defaultCookieStoreId
     ) {
+      // It'd be nice if tabs.update worked for this, but it doesn't.
+      // TODO: think about the chosen cookie store harder? This works great for new-tab
+      // from a container tab, but opening a link from an external handler might grab an
+      // unrelated window.
       openInDifferentContainer(lastCookieStoreId, tab, details.url);
     }
-  });
+  }, e => console.error(e));
+});
+
+browser.windows.onFocusChanged.addListener(windowId => {
+  if (windowId != browser.windows.WINDOW_ID_NONE) {
+    browser.tabs.query({active: true, windowId: windowId}).then(tabs => {
+      if (tabs.length > 0) {
+        updateLastCookieStoreId(tabs[0]);
+      }
+    }, e => console.error(e));
+  }
 });
 
 // DEBUG help for me later:
