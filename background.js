@@ -45,6 +45,17 @@ const updateLastCookieStoreId = function(activeInfo) {
   }, e => console.error(e));
 };
 
+const isPrivilegedURL = function(url) {
+  return url == 'about:config' ||
+    url == 'about:debugging' ||
+    url == 'about:addons' ||
+    url.startsWith('chrome:') ||
+    url.startsWith('javascript:') ||
+    url.startsWith('data:') ||
+    url.startsWith('file:') ||
+    url.startsWith('about:config');
+}
+
 // Event flow is:
 // tab.onCreated (tab URL not yet set)
 // tab.onActivated
@@ -64,6 +75,10 @@ browser.tabs.onActivated.addListener(activeInfo => {
 browser.webNavigation.onBeforeNavigate.addListener(details => {
   console.debug('webNaviagation onBeforeNavigate', details);
   if (details.tabId == abandonedTabId) {
+    return;
+  }
+  if (isPrivilegedURL(details.url)) {
+    console.debug("Privileged URL, didn't try containers", details.url);
     return;
   }
   browser.tabs.get(details.tabId).then(tab => {
