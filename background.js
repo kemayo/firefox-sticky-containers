@@ -47,10 +47,12 @@ const isPrivilegedURL = function(url) {
   return url == 'about:config' ||
     url == 'about:debugging' ||
     url == 'about:addons' ||
+    url == 'about:home' ||
     url.startsWith('chrome:') ||
     url.startsWith('javascript:') ||
     url.startsWith('data:') ||
     url.startsWith('file:') ||
+    url.startsWith('about:preferences') ||
     url.startsWith('about:config');
 }
 
