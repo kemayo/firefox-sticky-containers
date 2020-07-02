@@ -114,6 +114,17 @@ browser.windows.onFocusChanged.addListener(windowId => {
   }
 });
 
+browser.commands.onCommand.addListener(function(command) {
+  if (command == "open-new-tab-in-same-container") {
+    console.debug("opening a new tab in container", lastCookieStoreId);
+    const tabProperties = {
+	  active: true,
+	  cookieStoreId: lastCookieStoreId,
+    };
+    browser.tabs.create(tabProperties);
+  }
+});
+
 // DEBUG help for me later:
 /*
 browser.tabs.onCreated.addListener(tab => {
