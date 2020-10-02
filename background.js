@@ -44,16 +44,11 @@ const updateLastCookieStoreId = function(tab) {
 };
 
 const isPrivilegedURL = function(url) {
-  return url == 'about:config' ||
-    url == 'about:debugging' ||
-    url == 'about:addons' ||
-    url == 'about:home' ||
+  return url.startsWith('about:') ||
     url.startsWith('chrome:') ||
     url.startsWith('javascript:') ||
     url.startsWith('data:') ||
-    url.startsWith('file:') ||
-    url.startsWith('about:preferences') ||
-    url.startsWith('about:config');
+    url.startsWith('file:');
 }
 
 // Event flow is:
@@ -111,6 +106,26 @@ browser.windows.onFocusChanged.addListener(windowId => {
         updateLastCookieStoreId(tabs[0]);
       }
     }, e => console.error(e));
+  }
+});
+
+browser.commands.onCommand.addListener(function(command) {
+  if (command == "open-new-tab-in-same-container") {
+    console.debug("opening a new tab in container", lastCookieStoreId);
+    const tabProperties = {
+	  active: true,
+	  cookieStoreId: lastCookieStoreId,
+    };
+    browser.tabs.create(tabProperties);
+  }
+  else if (command == "open-new-tab-without-container") {
+    console.debug("opening a new tab without container");
+    lastCookieStoreId = defaultCookieStoreId;
+    const tabProperties = {
+      active: true,
+      cookieStoreId: defaultCookieStoreId,
+    };
+    browser.tabs.create(tabProperties);
   }
 });
 
