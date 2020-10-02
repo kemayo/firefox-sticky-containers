@@ -44,17 +44,11 @@ const updateLastCookieStoreId = function(tab) {
 };
 
 const isPrivilegedURL = function(url) {
-  return url == 'about:config' ||
-    url == 'about:debugging' ||
-    url == 'about:blank' ||
-    url == 'about:addons' ||
-    url == 'about:home' ||
+  return url.startsWith('about:') ||
     url.startsWith('chrome:') ||
     url.startsWith('javascript:') ||
     url.startsWith('data:') ||
-    url.startsWith('file:') ||
-    url.startsWith('about:preferences') ||
-    url.startsWith('about:config');
+    url.startsWith('file:');
 }
 
 // Event flow is:
