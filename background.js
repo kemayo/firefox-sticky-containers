@@ -46,6 +46,7 @@ const updateLastCookieStoreId = function(tab) {
 const isPrivilegedURL = function(url) {
   return url == 'about:config' ||
     url == 'about:debugging' ||
+    url == 'about:blank' ||
     url == 'about:addons' ||
     url == 'about:home' ||
     url.startsWith('chrome:') ||
@@ -120,6 +121,15 @@ browser.commands.onCommand.addListener(function(command) {
     const tabProperties = {
 	  active: true,
 	  cookieStoreId: lastCookieStoreId,
+    };
+    browser.tabs.create(tabProperties);
+  }
+  else if (command == "open-new-tab-without-container") {
+    console.debug("opening a new tab without container");
+    lastCookieStoreId = defaultCookieStoreId;
+    const tabProperties = {
+      active: true,
+      cookieStoreId: defaultCookieStoreId,
     };
     browser.tabs.create(tabProperties);
   }

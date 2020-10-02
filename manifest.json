@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Sticky Containers",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "David Lynch",
 
   "description": "New tabs will keep the current container",
@@ -20,6 +20,12 @@
 		"default": "Ctrl+Y"
 	  },
 	  "description": "Open a new tab in the same container as the current one"
+    },
+    "open-new-tab-without-container": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+Y"
+      },
+      "description": "Open a new tab without any container"
     }
   },
   "permissions": [
